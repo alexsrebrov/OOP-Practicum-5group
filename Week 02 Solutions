@@ -1,0 +1,315 @@
+Week02 Solutions 
+
+
+problem01
+
+#include<iostream>
+#include<fstream>
+
+const int MAX_SIZE=1024;
+
+enum class currency {
+    EUR,
+    USD,
+    ARS,
+    GBP,
+    BTC
+};
+
+class BankAccount {
+    char name[MAX_SIZE];
+    double balance;
+    char IBAN[MAX_SIZE];
+public:
+
+    void addBankAccount() {
+        std::cout<<"Name:";
+        std::cin.getline(name,MAX_SIZE);
+        std::cout<<"Balance:";
+        std::cin>>balance;
+        std::cin.ignore();
+        std::cout<<"IBAN:";
+        std::cin.getline(IBAN,MAX_SIZE);
+        std::cout<<std::endl;
+    }
+
+    double withdraw(double amount) {
+        if (amount<0 || amount>balance) {
+            return balance;
+        }
+        balance-=amount;
+        return balance;
+    }
+
+    double deposit(double amount) {
+        if (amount<0) {
+            return balance;
+        }
+        balance+=amount;
+        return balance;
+    }
+
+    void showBalance(currency c = currency::EUR) const {
+        switch (c) {
+            case currency::EUR : std::cout<<"Balance is:"<<balance<<" EUR"; break;
+            case currency::USD : std::cout<<"Balance is:"<<balance*1.178<<" USD"; break;
+            case currency::ARS : std::cout<<"Balance is:"<<balance*1626<<" ARS"; break;
+            case currency::GBP : std::cout<<"Balance is:"<<balance*0.872<<" GBP"; break;
+            case currency::BTC : std::cout<<"Balance is:"<<balance*0.000016<<" BTC"; break;
+            default: std::cout<<"Balance is:"<<balance<<" EUR"; break;
+        }
+        std::cout<<std::endl;
+    }
+
+    void writeToFile(std::ofstream& file) const {
+        file << name <<std::endl;
+        file << IBAN <<std::endl;
+        file << balance <<std::endl;
+    }
+
+    void readFromFile(std::ifstream& file) {
+        file.getline(name,MAX_SIZE);
+        file.getline(IBAN,MAX_SIZE);
+        file >> balance;
+    }
+};
+
+class BankAccountSerializer {
+public:
+
+    void save(const BankAccount& b, const char* fileName) {
+        std::ofstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        b.writeToFile(file);
+        file.close();
+    }
+
+    void read(BankAccount& b, const char* fileName) {
+        std::ifstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        b.readFromFile(file);
+        file.close();
+    }
+
+};
+
+int main(){
+ BankAccount acc;
+ acc.addBankAccount();
+ acc.deposit(500);
+ acc.withdraw(200);
+ acc.showBalance();
+ acc.showBalance(currency::BTC);
+ BankAccountSerializer serializer;
+ serializer.save(acc,"info.txt");
+ BankAccount loaded;
+ serializer.read(loaded,"info.txt");
+ loaded.showBalance();
+}
+
+
+problem02
+
+#include<iostream>
+#include<fstream>
+
+const int MAX_SIZE=1024;
+
+class Student {
+public:
+    char name[MAX_SIZE];
+    char fn[MAX_SIZE];
+    char password[MAX_SIZE];
+
+    void addStudent(Student& s) {
+        std::cin.getline(s.name,MAX_SIZE);
+        std::cin.getline(s.fn,MAX_SIZE);
+        std::cin.getline(s.password,MAX_SIZE);
+    }
+
+    void printStudent(Student& s) {
+        std::cout<<s.name<<std::endl;
+        std::cout<<s.fn<<std::endl;
+        std::cout<<s.password<<std::endl;
+    }
+};
+
+class StudentSerializer {
+public:
+    void writeToFile(Student& s,std::ofstream& file) {
+        file << s.name << std::endl;
+        file << s.fn <<std::endl;
+        file << s.password<<std::endl;
+    }
+
+    void readFromFile(Student& s,std::ifstream& file) {
+        file.getline(s.name,MAX_SIZE);
+        file.getline(s.fn,MAX_SIZE);
+        file.getline(s.password,MAX_SIZE);
+    }
+
+    void save(Student& s,const char* fileName) {
+        std::ofstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        writeToFile(s,file);
+        file.close();
+    }
+
+    void read(Student& s,const char* fileName) {
+        std::ifstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        readFromFile(s,file);
+        file.close();
+    }
+};
+
+int main() {
+  Student student,loaded;
+  student.addStudent(student);
+  student.printStudent(student);
+  StudentSerializer ss;
+  ss.save(student,"student_info.txt");
+  ss.read(loaded,"student_info.txt");
+  loaded.printStudent(loaded);
+}
+
+
+problem03
+
+#include<iostream>
+#include<fstream>
+
+const int MAX_SIZE=100;
+
+enum Position {
+    SOFTWARE_ENGINEER,
+    SENIOR_SOFTWARE_ENGINEER,
+    ENGINEER_MANAGER,
+    LEAD_SOFTWARE_ENGINEER
+};
+
+struct Employee {
+    char name[MAX_SIZE];
+    Position position;
+    double salary;
+    int grade;
+};
+
+void writeEmployeeToFile(std::ofstream& file,Employee& e) {
+    file << e.name <<std::endl;
+    file << e.position << std::endl;
+    file << e.salary << std::endl;
+    file << e.grade << std::endl;
+}
+
+void readEmployeeFromFile(std::ifstream& file,Employee& e) {
+    file.getline(e.name,MAX_SIZE);
+    int pos;
+    file >> pos;
+    e.position=(Position)pos;
+    file >> e.salary;
+    file >> e.grade;
+    file.ignore();
+}
+
+void readEmployee(Employee& n) {
+    std::cin.getline(n.name,MAX_SIZE);
+    int pos;
+    std::cin>>pos;
+    n.position=(Position)pos;
+    std::cin>>n.salary;
+    std::cin>>n.grade;
+    std::cin.ignore();
+}
+
+void printEmployeeInfo(Employee n) {
+    std::cout<<"Name:"<<n.name<<std::endl;
+    std::cout<<"Position:"<<n.position<<std::endl;
+    std::cout<<"Salary:"<<n.salary<<std::endl;
+    std::cout<<"Grade:"<<n.grade<<std::endl;
+}
+
+struct Company {
+    int employeeCount;
+    Employee employees[MAX_SIZE];
+    double avrgSalary;
+};
+
+void printCompanyInfo(Company& c) {
+    std::cout<<"Numbers of empoloyees:"<<c.employeeCount<<std::endl;
+    std::cout<<"Averege Salary:"<<c.avrgSalary<<std::endl;
+    for (int i=0; i<c.employeeCount; ++i) {
+        printEmployeeInfo(c.employees[i]);
+        std::cout<<std::endl;
+    }
+}
+
+void readCompany(Company& c) {
+    std::cin>>c.employeeCount;
+    std::cin.ignore();
+    for (int i=0; i<c.employeeCount; ++i) {
+        readEmployee(c.employees[i]);
+    }
+    double sum=0;
+    for (int i=0; i<c.employeeCount; ++i) {
+        sum+=c.employees[i].salary;
+    }
+    c.avrgSalary=sum/c.employeeCount;
+}
+
+class CompanySerializer {
+public:
+    void writeCompanyToFile(std::ofstream& file,Company& c) {
+        file << c.employeeCount <<std::endl;
+        file << c.avrgSalary<<std::endl;
+        for (int i=0; i<c.employeeCount; ++i) {
+            writeEmployeeToFile(file,c.employees[i]);
+        }
+    }
+
+    void readCompanyFromFile(std::ifstream& file,Company& c) {
+        file >> c.employeeCount;
+        file >> c.avrgSalary;
+        file.ignore();
+        for (int i=0; i<c.employeeCount; ++i) {
+            readEmployeeFromFile(file,c.employees[i]);
+        }
+    }
+
+    void save(Company& c,const char* fileName) {
+        std::ofstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        writeCompanyToFile(file,c);
+        file.close();
+    }
+
+    void load(Company& c,const char* fileName) {
+        std::ifstream file(fileName);
+        if (!file.is_open()) {
+            return;
+        }
+        readCompanyFromFile(file,c);
+        file.close();
+    }
+};
+
+int main() {
+    Company c,loaded;
+    readCompany(c);
+    printCompanyInfo(c);
+    CompanySerializer cs;
+    cs.save(c,"ITCompany.txt");
+    cs.load(loaded,"ITCompany.txt");
+    printCompanyInfo(loaded);
+
+}
