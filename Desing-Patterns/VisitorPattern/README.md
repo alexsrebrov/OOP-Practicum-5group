@@ -30,14 +30,17 @@ public:
     }
 
     bool fitIntoCircle(const Circle& c) const override {
-        return r <= c.r;
+        // logic ...
+        return false;
     }
 
     bool fitIntoRectangle(const Rectangle& r) const override {
-        return 2 * this->r <= min(r.w, r.h);
+        // logic ...
+        return true;
     }
 
     bool fitIntoTriangle(const Triangle&) const override {
+        // logic ...
         return false;
     }
 };
@@ -52,14 +55,17 @@ public:
     }
 
     bool fitIntoCircle(const Circle&) const override {
-        return false; // simplified rule
+        // logic ...
+        return true;
     }
 
     bool fitIntoRectangle(const Rectangle& r) const override {
-        return w <= r.w && h <= r.h;
+        // logic ...
+        return true;
     }
 
     bool fitIntoTriangle(const Triangle&) const override {
+        // logic ...
         return false;
     }
 };
@@ -70,19 +76,22 @@ private:
     double b, h;
 public:
     bool canFitInto(const Shape& outer) const override {
-        return outer.fitIntoTriangle(*this);
+        return outer.fitIntoCircle(*this);
     }
 
-    bool fitIntoCircle(const Circle&) const override {
+    bool fitIntoCircle(const Circle& c) const override {
+        // logic ...
         return false;
     }
 
     bool fitIntoRectangle(const Rectangle& r) const override {
-        return b <= r.w && h <= r.h;
+        // logic ...
+        return true;
     }
 
     bool fitIntoTriangle(const Triangle&) const override {
-        return b <= outerBase && h <= outerHeight; // simplified assumption
+        // logic ...
+        return false;
     }
 };
 ```
