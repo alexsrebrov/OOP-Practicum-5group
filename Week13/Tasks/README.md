@@ -23,12 +23,12 @@
 Можете да използвате `<sstream>`
 
 Примере вход и изход:
-```text
-add 2 3|123
-div 10 0|
-pow 2 3|
-hello 1 2|
-add 5 x|
+```c++ 
+add 2 3         // 5
+div 10 0        // Error: division by zero
+pow 2 3         // 8
+hello 1 2       // Error: invalid command
+add 5 x         // Error: invalid argument
 ```
 
 # Задача 2
