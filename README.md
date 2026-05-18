@@ -20,6 +20,7 @@
 ---
 ## Допълнителни материали
 - [**Работа с файлове**](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/FileHandling)
+- [**Design Patterns**](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/master/Design-Patterns)
 - **Подготовка за Контролно 1**
     1. [Примерни снипети за Контрлно 1](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week10/snippets.md)
     1. [Примерни задачи за Контролно 1](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week10/Tasks)
