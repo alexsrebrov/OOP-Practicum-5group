@@ -1,12 +1,12 @@
 # Задача 1
 
 Имплементирайте конзолен калкулатор:
- - `add *num1* *num2*` +
- - `sub *num1* *num2*` -
- - `mul *num1* *num2*` *
- - `div *num1* *num2*` /
- - `pow *num1* *num2*` ^
- - `exp *num*` e ^ num
+ - **add** *num1* *num2* `num1 + num2` 
+ - **sub** *num1* *num2* `num1 - num2`
+ - **mul** *num1* *num2* `num1 * num2`
+ - **div** *num1* *num2* `num1 / num2`
+ - **pow** *num1* *num2* `num1 ^ num2`
+ - **exp** *num* `e ^ num`
 
 **Изисквания**:
  - Хвърляйте подходящо ваше изключение, когато:
