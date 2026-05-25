@@ -16,6 +16,7 @@
  - **Тема 11**: [Наследяване](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week11) [[Задачи](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week11/Tasks)]
  - **Тема 12**: [Полиморфизъм. Абстрактни класове. Интерфейс](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week12) [[Задачи](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week12/Tasks)]
  - **Тема 13**: [Ламби. Изключения](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week13) [[Задачи](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week13/Tasks)]
+-  **Тема 14**: [Множествено наследяване. Виртуално наследяване. Диамантен проблем.](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week14) [[Задачи](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Week14/Tasks)]
 
 ---
 ## Допълнителни материали
