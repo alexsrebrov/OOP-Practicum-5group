@@ -30,8 +30,7 @@ int main() {
         }
 
         try {
-            auto cmd = CommandFactory::create(player, tokens);
-            cmd->execute();
+            CommandFactory::create(player, tokens) -> execute();
         }
         catch (const InvalidCommand& e) {
             std::cout << "Error: " << e.what() << "\n";
