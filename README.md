@@ -29,6 +29,6 @@
     1. [Контролно 1 - задачи и снипети с отговори](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/master/Test1)
  - **Подготовка за Контролно 2**
     1. [Примерни снипети за Контрлно 1](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Test2/prep/snippets.md)
-    1. [Примерни задача за Контролно 1](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Test2/prep/task.md)
-    1. [Контролно 1 - задачи и снипети с отговори](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/master/Test2)
+    1. [Примернa задача за Контролно 1](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/main/Test2/prep/task.md)
+    1. [Контролно 1 - задачa и снипети с отговори](https://github.com/alexsrebrov/OOP-Practicum-5group/tree/master/Test2)
 
