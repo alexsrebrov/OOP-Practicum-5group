@@ -1,6 +1,7 @@
 #pragma once
 #include "StarRepository.h"
 #include "StarFilter.h"
+#include "StarFilterFactory.h"
 
 class Account {
 private:
@@ -46,28 +47,29 @@ public:
 
     void addFilter(const std::string& filterType) 
     {
-        filters.push_back(StarFilter::create(filterType));
+        filters.push_back(StarFilterFactory::create(filterType));
     }
 
-    void addStar(const Star& star) {
-
-        std::vector<std::string> failed;
+    void unlockStar(const Star& star) 
+    {
+        bool success = true;
+        
         for (const auto& f : filters)
+        {
             if (!f->matches(star))
             {
-                failed.push_back(f->describe());
+                success = false;
+                break;
             }
-
-        if (!failed.empty()) {
-            std::cout << "Problems: ";
-            for (std::size_t i = 0; i < failed.size(); ++i)
-            {
-                std::cout << failed[i] << '\n';
-            }
-            return;
         }
 
-        repo.add(std::move(star));
+        if (success) 
+        {
+            repo.add(star);
+            return;
+        }
+        
+        throw std::runtime_error("Star doesnt meet filters");
     }
 
     double accountRating() const 

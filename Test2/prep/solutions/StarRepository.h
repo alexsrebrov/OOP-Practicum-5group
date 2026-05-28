@@ -29,7 +29,21 @@ public:
     }
 
     void remove(std::function<bool(const Star&)> predicate) {
-        std::remove_if(stars.begin(), stars.end(), predicate);
+        std::erase_if(stars, predicate);
+
+        /* ако не сте сигурни как и какво се използва с вградените функции можете да направите един for цикъл
+        std::vector<Star> kept;
+        for (auto& star : stars) 
+        {
+            if (!predicate(star))
+            {
+                kept.push_back(star);
+            }
+        }
+
+        с std::move копирането става малко по-оптимално (kept така или иначе ще бъде изтрито в края на метода)
+        stars = std::move(kept);
+        */
     }
 
     void sort(std::function<bool(const Star&, const Star&)> comparator) {
@@ -48,6 +62,28 @@ public:
                 std::swap(stars[i], stars[minIdx]);
             }
         }
+    }
+
+    const Star& findByName(const std::string& name) const {
+        for (auto& star : stars)
+        {
+            if (star.getName() == name)
+            {
+                return star;
+            }
+        }
+        throw std::runtime_error("There isnt a star with this name");
+    }
+
+    Star& findByName(const std::string& name) {
+        for (auto& star : stars)
+        {
+            if (star.getName() == name)
+            {
+                return star;
+            }
+        }
+        throw std::runtime_error("There isnt a star with this name");
     }
 
     double repoRating() const {

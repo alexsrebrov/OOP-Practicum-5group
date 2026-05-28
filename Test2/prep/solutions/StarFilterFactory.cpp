@@ -1,9 +1,9 @@
-#include "StarFilter.h"
+#include "StarFilterFactory.h"
 #include "MinLevelFilter.h"
 #include "MinTrophiesFilter.h"
 #include "RarityFilter.h"
 
-std::unique_ptr<StarFilter> StarFilter::create(const std::string& type) {
+std::unique_ptr<StarFilter> StarFilterFactory::create(const std::string& type) {
     if (type == "min_trophies")
     {
         unsigned param;
