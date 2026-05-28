@@ -50,28 +50,6 @@ public:
         }
     }
 
-    const Star& findByName(const std::string& name) const {
-        for (auto& star : stars)
-        {
-            if (star.getName() == name)
-            {
-                return star;
-            }
-        }
-        throw std::runtime_error("There isnt a star with this name");
-    }
-
-    Star& findByName(const std::string& name) {
-        for (auto& star : stars)
-        {
-            if (star.getName() == name)
-            {
-                return star;
-            }
-        }
-        throw std::runtime_error("There isnt a star with this name");
-    }
-
     double repoRating() const {
         int result = 0;
 

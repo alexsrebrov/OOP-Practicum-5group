@@ -77,17 +77,17 @@ int main() {
 
 ## Задача 3
 ```c++
-struct E : runtime_error {
-    E(const string& msg) : runtime_error(msg) {}
+struct Base : runtime_error {
+    Base(const string& str) : runtime_error(str) {}
 };
 
-struct F : E {
-    F(const string& msg) : E(msg) {}
+struct Der : Base {
+    Der(const string& str) : Base(str) {}
 };
 
 struct A {
-    A() {throw F("error");}
-    A(int a) {throw E("error");}
+    A() {throw Der("error");}
+    A(int a) {throw Base("error");}
 };
 
 int main() {
@@ -95,18 +95,18 @@ int main() {
         A a;
     } catch (const runtime_error& e) {
         cout << "Caught runtime_error exception: " << e.what() << endl;
-    } catch (const E& e) {
-        cout << "Caught E exception: " << e.what() << endl;
-    } catch (const F& e) {
-        cout << "Caught F exception: " << e.what() << endl;
+    } catch (const Base& e) {
+        cout << "Caught Base exception: " << e.what() << endl;
+    } catch (const Der& e) {
+        cout << "Caught Der exception: " << e.what() << endl;
     }
 
     try {
         A a(5);
-    } catch (const F& e) {
-        cout << "Caught F exception: " << e.what() << endl;
-    } catch (const E& e) {
-        cout << "Caught E exception: " << e.what() << endl;
+    } catch (const Der& e) {
+        cout << "Caught Der exception: " << e.what() << endl;
+    } catch (const Base& e) {
+        cout << "Caught Base exception: " << e.what() << endl;
     } catch (const runtime_error& e) {
         cout << "Caught runtime_error exception: " << e.what() << endl;
     }
@@ -264,7 +264,7 @@ Error in C constructor
 #### Задача 3
 ```
 Caught runtime_error exception: error
-Caught E exception: error
+Caught Base exception: error
 ```
 #### Задача 4
 ```
