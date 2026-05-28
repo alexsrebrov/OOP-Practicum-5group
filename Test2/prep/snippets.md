@@ -16,19 +16,13 @@ struct A {
 };
 
 int main() {
-    vector<shared_ptr<A>> v;
-    v.push_back(make_shared<A>(1, 'a'));
-    v.push_back(make_shared<A>(2, 'b'));
-    v.push_back(make_shared<A>(3, 'c'));
-    v.push_back(v[1]);
-    v.push_back(v[2]);
-    v.push_back(v[2]);
-
-    cout << v[1].use_count() << '\n';
-    cout << v[4].use_count() << '\n';
+    vector<unique_ptr<A>> v;
+    v.push_back(make_unique<A>(1, 'a'));
+    v.push_back(make_unique<A>(2, 'b'));
+    v.push_back(make_unique<A>(3, 'c'));
 
     erase_if(v, [](const auto& p) {
-        return p.use_count() >= 2 && p->num % 2 == 1;
+        return p->num % 2 == 1;
     });
 
     cout << v.size() << '\n';
@@ -38,7 +32,9 @@ int main() {
             return a->c > b->c; 
         });
 
-    if(!v.empty()) cout << v.front()->num << '\n';
+    for (auto& p : v) {
+        cout << p->num << "," << p->c << "\n";
+    }
 }
 ```
 
@@ -251,13 +247,10 @@ int main() {
 Constructor=1,a
 Constructor=2,b
 Constructor=3,c
-2
-3
-Destructor=3,c
-3
-2
-Destructor=2,b
 Destructor=1,a
+Destructor=3,c
+1
+2,b
 ```
 #### Задача 2
 ```
