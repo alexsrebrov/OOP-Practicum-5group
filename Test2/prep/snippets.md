@@ -40,38 +40,43 @@ int main() {
 
 ## Задача 2
 ```c++
-struct A {
-    A() { cout << "A\n"; }
-    virtual ~A() { cout << "~A\n"; }
-};
+#include <iostream>
+#include <stdexcept>
+using namespace std;
 
-struct B : virtual A {
-    B() { cout << "B\n"; }
-    ~B() override { cout << "~B\n"; }
-};
-
-struct C : virtual A {
-    C() {
-        cout << "C\n";
-        throw runtime_error("Error in C constructor\n");
+struct Resource {
+    string name;
+    Resource(const string& n) : name(n) {
+        cout << "Class: " << name << "\n";
     }
-    ~C() override { cout << "~C\n"; }
+    ~Resource() {
+        cout << "~" << name << "\n";
+    }
 };
 
-struct D : B, C {
-    D() { cout << "D\n"; }
-    ~D() override { cout << "~D\n"; }
-};
+void inner() {
+    Resource r3("C");
+    throw runtime_error("Error caught\n");
+    Resource r4("D");
+}
+
+void middle() {
+    Resource r2("B");
+    inner();
+}
+
+void outer() {
+    Resource r1("A");
+    try {
+        middle();
+    }
+    catch (const runtime_error& e) {
+        cout << "caught: " << e.what();
+    }
+}
 
 int main() {
-    try
-    {
-        D d;
-    }
-    catch (const runtime_error &e)
-    {
-        cout << e.what();
-    }
+    outer();
 }
 ```
 
@@ -185,57 +190,25 @@ int main() {
 ## Задача 6
 ```c++
 template<typename T>
-struct Formatter {
-    static void show(const T&) {
-        std::cout << "BASE";
-    }
+struct Label {
+    static void print() { cout << "unknown\n"; }
 };
 
 template<>
-struct Formatter<int> {
-    static void show(const int&) {
-        std::cout << "INT";
-    }
-};
-
-template<typename T>
-struct Formatter<std::vector<T>> {
-    static void show(const std::vector<T>& v) {
-        std::cout << "LIST{ ";
-        for (const auto& x : v) {
-            Formatter<T>::show(x);
-            cout << " ";
-        }
-        std::cout << "}";
-    }
+struct Label<int> {
+    static void print() { cout << "int\n"; }
 };
 
 template<>
-struct Formatter<std::vector<int>> {
-    static void show(const std::vector<int>& v) {
-        std::cout << "INT_LIST{ ";
-        for (const auto& x : v) {
-            Formatter<int>::show(x);
-            cout << " ";
-        }
-        std::cout << "}";
-    }
+struct Label<double> {
+    static void print() { cout << "double\n"; }
 };
 
 int main() {
-    Formatter<double>::show(3.14);
-    std::cout << std::endl;
-    Formatter<int>::show(10);
-    std::cout << std::endl;
-    
-    std::vector<int> a = {1, 2};
-    std::vector<double> b = {1.5, 2.5};
-    
-    Formatter<std::vector<int>>::show(a);
-    std::cout << std::endl;
-
-    Formatter<std::vector<double>>::show(b);
-    std::cout << std::endl;
+    Label<int>::print();
+    Label<double>::print();
+    Label<char>::print();
+    Label<float>::print();
 }
 ```
 
@@ -254,12 +227,13 @@ Destructor=3,c
 ```
 #### Задача 2
 ```
-A
-B
-C
+Class: A
+Class: B
+Class: C
+~C
 ~B
+caught: Error caught
 ~A
-Error in C constructor
 ```
 #### Задача 3
 ```
@@ -302,8 +276,8 @@ C::c
 ```
 ### Задача 6
 ```
-BASE
-INT
-INT_LIST{ INT INT }
-LIST{ BASE BASE }
+int
+double
+unknown
+unknown
 ```
