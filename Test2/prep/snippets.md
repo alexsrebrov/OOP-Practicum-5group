@@ -254,8 +254,8 @@ Constructor=3,c
 2
 3
 Destructor=3,c
-3
-2
+4
+1
 Destructor=2,b
 Destructor=1,a
 ```
