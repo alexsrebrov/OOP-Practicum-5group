@@ -41,6 +41,7 @@ jobs:
       - name: Copy README files
         run: |
           find . \
+            -maxdepth 2 \
             -type f \
             -name "README.md" \
             -not -path "./.git/*" \
