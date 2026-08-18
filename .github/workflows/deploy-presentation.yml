@@ -1,4 +1,4 @@
-name: Deploy OOP Presentations
+name: Deploy Presentations
 
 on:
   push:
@@ -14,30 +14,58 @@ permissions:
 
 jobs:
   build:
+    name: Build presentation
     runs-on: ubuntu-latest
 
     steps:
+      # --------------------------------------------------
+      # Checkout repository
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Prepare presentation
+      # --------------------------------------------------
+      # Prepare presentation directory
+      # --------------------------------------------------
+      - name: Prepare site
         run: |
           mkdir -p _site
-          cp -r presentation/* _site/
 
-      - name: Copy weekly READMEs
+          cp presentation/index.html _site/index.html
+          cp presentation/app.js _site/app.js
+          cp presentation/style.css _site/style.css
+
+      # --------------------------------------------------
+      # Find every README.md and copy it to the site
+      # --------------------------------------------------
+      - name: Copy README files
         run: |
-          for directory in Week*/; do
-            if [ -f "${directory}README.md" ]; then
-              echo "Copying ${directory}README.md"
+          find . \
+            -type f \
+            -name "README.md" \
+            -not -path "./.git/*" \
+            -not -path "./.github/*" \
+            -not -path "./presentation/*" \
+            -not -path "./_site/*" \
+            -print0 |
+          while IFS= read -r -d '' file; do
 
-              mkdir -p "_site/${directory}"
+            directory=$(dirname "$file")
 
-              cp "${directory}README.md" \
-                 "_site/${directory}README.md"
-            fi
+            # Remove ./ from the beginning
+            directory=${directory#./}
+
+            echo "Copying: $file"
+
+            mkdir -p "_site/$directory"
+
+            cp "$file" "_site/$directory/README.md"
+
           done
 
+      # --------------------------------------------------
+      # Generate weeks.json
+      # --------------------------------------------------
       - name: Generate weeks.json
         run: |
           python3 - <<'PY'
@@ -45,64 +73,126 @@ jobs:
           import os
           import re
 
-          weeks = []
+          excluded = {
+              ".git",
+              ".github",
+              "presentation",
+              "_site"
+          }
 
-          directories = sorted(
-              os.listdir("."),
-              key=lambda x: int(
-                  re.search(r"\d+", x).group()
-              ) if re.fullmatch(r"Week\d+", x)
-              else 999
-          )
+          entries = []
 
-          for directory in directories:
-              if not re.fullmatch(r"Week\d+", directory):
+          for root, dirs, files in os.walk("."):
+
+              # Do not scan excluded directories
+              dirs[:] = [
+                  d for d in dirs
+                  if d not in excluded
+                  and not d.startswith(".")
+              ]
+
+              # We only care about directories
+              # containing README.md
+              if "README.md" not in files:
                   continue
 
-              readme = os.path.join(directory, "README.md")
+              directory = root.removeprefix("./")
 
-              if not os.path.isfile(readme):
+              # Ignore root README.md
+              if not directory:
                   continue
 
-              number = re.search(r"\d+", directory).group()
+              # Display name
+              name = directory
 
-              weeks.append({
-                  "id": number,
-                  "name": f"Седмица {int(number):02d}",
+              # Format Week01 -> Week 01
+              match = re.fullmatch(
+                  r"Week(\d+)",
+                  directory
+              )
+
+              if match:
+                  name = f"Week {int(match.group(1)):02d}"
+
+              entries.append({
+                  "name": name,
                   "path": f"{directory}/README.md"
               })
 
-          with open("_site/weeks.json", "w", encoding="utf-8") as file:
+          # Sort alphabetically
+          entries.sort(
+              key=lambda entry: entry["name"].lower()
+          )
+
+          os.makedirs("_site", exist_ok=True)
+
+          with open(
+              "_site/weeks.json",
+              "w",
+              encoding="utf-8"
+          ) as file:
               json.dump(
-                  weeks,
+                  entries,
                   file,
                   ensure_ascii=False,
                   indent=2
               )
 
-          print(json.dumps(
-              weeks,
-              ensure_ascii=False,
-              indent=2
-          ))
+          print("Generated weeks.json:")
+          print(
+              json.dumps(
+                  entries,
+                  ensure_ascii=False,
+                  indent=2
+              )
+          )
           PY
 
+      # --------------------------------------------------
+      # Verify generated site
+      # --------------------------------------------------
+      - name: Verify site
+        run: |
+          echo "======================================"
+          echo "Generated site:"
+          echo "======================================"
+
+          find _site -type f | sort
+
+          echo ""
+          echo "======================================"
+          echo "weeks.json:"
+          echo "======================================"
+
+          cat _site/weeks.json
+
+      # --------------------------------------------------
+      # Configure GitHub Pages
+      # --------------------------------------------------
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      # --------------------------------------------------
+      # Upload site
+      # --------------------------------------------------
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: "_site"
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # ======================================================
+  # DEPLOY
+  # ======================================================
 
+  deploy:
+    name: Deploy presentation
     runs-on: ubuntu-latest
 
     needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Deploy to GitHub Pages
