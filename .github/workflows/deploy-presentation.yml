@@ -1,0 +1,119 @@
+name: Deploy OOP Presentations
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare presentation
+        run: |
+          mkdir -p _site
+
+          cp -r presentation/* _site/
+
+      - name: Copy weekly READMEs
+        run: |
+          for directory in Week*/; do
+            if [ -f "${directory}README.md" ]; then
+              echo "Copying ${directory}README.md"
+
+              mkdir -p "_site/${directory}"
+
+              cp "${directory}README.md" \
+                 "_site/${directory}README.md"
+            fi
+          done
+
+      - name: Generate weeks.json
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+
+          weeks = []
+
+          directories = sorted(
+              os.listdir("."),
+              key=lambda x: int(
+                  re.search(r"\d+", x).group()
+              ) if re.match(r"^Week\d+$", x)
+              else 999
+          )
+
+          for directory in directories:
+
+              if not re.fullmatch(r"Week\d+", directory):
+                  continue
+
+              readme = os.path.join(
+                  directory,
+                  "README.md"
+              )
+
+              if not os.path.isfile(readme):
+                  continue
+
+              number = re.search(
+                  r"\d+",
+                  directory
+              ).group()
+
+              weeks.append({
+                  "id": number,
+                  "name": f"Седмица {int(number):02d}",
+                  "path": f"{directory}/README.md"
+              })
+
+          with open("_site/weeks.json", "w") as file:
+              json.dump(
+                  weeks,
+                  file,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          print("Generated weeks.json:")
+          print(json.dumps(
+              weeks,
+              ensure_ascii=False,
+              indent=2
+          ))
+          PY
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
