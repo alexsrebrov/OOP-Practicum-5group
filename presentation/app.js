@@ -1,35 +1,35 @@
 async function loadWeeks() {
-    const response = await fetch("weeks.json");
+  const response = await fetch("./weeks.json");
 
-    if (!response.ok) {
-        throw new Error("Could not load weeks.json");
-    }
+  if (!response.ok) {
+    throw new Error("Could not load weeks.json");
+  }
 
-    return await response.json();
+  return await response.json();
 }
 
 function startPresentation(path) {
-    document.getElementById("week-selector").style.display = "none";
+  document.getElementById("week-selector").style.display = "none";
 
-    remark.create({
-        sourceUrl: path,
-        ratio: "16:9",
-        highlightStyle: "magula",
-        highlightLines: true,
-        countIncrementalSlides: false
-    });
+  remark.create({
+    sourceUrl: path,
+    ratio: "16:9",
+    highlightStyle: "magula",
+    highlightLines: true,
+    countIncrementalSlides: false,
+  });
 }
 
 async function init() {
-    const weeks = await loadWeeks();
-    const container = document.getElementById("weeks");
+  const weeks = await loadWeeks();
+  const container = document.getElementById("weeks");
 
-    weeks.forEach(week => {
-        const card = document.createElement("button");
+  weeks.forEach((week) => {
+    const card = document.createElement("button");
 
-        card.className = "week-card";
+    card.className = "week-card";
 
-        card.innerHTML = `
+    card.innerHTML = `
             <span class="week-number">
                 ${week.name}
             </span>
@@ -39,17 +39,17 @@ async function init() {
             </span>
         `;
 
-        card.addEventListener("click", () => {
-            startPresentation(week.path);
-        });
-
-        container.appendChild(card);
+    card.addEventListener("click", () => {
+      startPresentation(week.path);
     });
+
+    container.appendChild(card);
+  });
 }
 
-init().catch(error => {
-    console.error(error);
+init().catch((error) => {
+  console.error(error);
 
-    document.getElementById("error").textContent =
-        "Неуспешно зареждане на темите.";
+  document.getElementById("error").textContent =
+    "Неуспешно зареждане на темите.";
 });
