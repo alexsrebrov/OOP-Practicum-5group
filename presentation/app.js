@@ -1,58 +1,55 @@
 async function loadWeeks() {
-  const response = await fetch("weeks.json");
+    const response = await fetch("weeks.json");
 
-  if (!response.ok) {
-    throw new Error("Could not load weeks.json");
-  }
+    if (!response.ok) {
+        throw new Error("Could not load weeks.json");
+    }
 
-  return await response.json();
+    return await response.json();
 }
 
 function startPresentation(path) {
-  document.getElementById("week-selector").style.display = "none";
+    document.getElementById("week-selector").style.display = "none";
 
-  remark.create({
-    sourceUrl: path,
-    ratio: "16:9",
-    highlightStyle: "magula",
-    highlightLines: true,
-    countIncrementalSlides: false,
-  });
+    remark.create({
+        sourceUrl: path,
+        ratio: "16:9",
+        highlightStyle: "magula",
+        highlightLines: true,
+        countIncrementalSlides: false
+    });
 }
 
 async function init() {
-  const weeks = await loadWeeks();
+    const weeks = await loadWeeks();
+    const container = document.getElementById("weeks");
 
-  const select = document.getElementById("week");
-  const button = document.getElementById("start");
+    weeks.forEach(week => {
+        const card = document.createElement("button");
 
-  weeks.forEach((week) => {
-    const option = document.createElement("option");
+        card.className = "week-card";
 
-    option.value = week.path;
-    option.textContent = week.name;
+        card.innerHTML = `
+            <span class="week-number">
+                ${week.name}
+            </span>
 
-    select.appendChild(option);
-  });
+            <span class="week-action">
+                Презентация →
+            </span>
+        `;
 
-  const params = new URLSearchParams(window.location.search);
-  const selectedWeek = params.get("week");
+        card.addEventListener("click", () => {
+            startPresentation(week.path);
+        });
 
-  if (selectedWeek) {
-    startPresentation(selectedWeek);
-    return;
-  }
-
-  button.addEventListener("click", () => {
-    const path = select.value;
-
-    window.location.href = `?week=${encodeURIComponent(path)}`;
-  });
+        container.appendChild(card);
+    });
 }
 
-init().catch((error) => {
-  console.error(error);
+init().catch(error => {
+    console.error(error);
 
-  document.getElementById("error").textContent =
-    "Неуспешно зареждане на темите.";
+    document.getElementById("error").textContent =
+        "Неуспешно зареждане на темите.";
 });
