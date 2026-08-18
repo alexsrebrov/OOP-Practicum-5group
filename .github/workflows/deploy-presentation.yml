@@ -33,7 +33,7 @@ jobs:
 
           cp presentation/index.html _site/index.html
           cp presentation/app.js _site/app.js
-          cp presentation/style.css _site/style.css
+          cp presentation/styles.css _site/style.css
 
       # --------------------------------------------------
       # Find every README.md and copy it to the site
