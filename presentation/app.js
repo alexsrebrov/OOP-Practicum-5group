@@ -2,7 +2,7 @@ async function loadWeeks() {
   const response = await fetch("./weeks.json");
 
   if (!response.ok) {
-    throw new Error("Could not load weeks.json");
+    throw new Error(`Failed to load weeks.json: ${response.status}`);
   }
 
   return await response.json();
@@ -22,6 +22,7 @@ function startPresentation(path) {
 
 async function init() {
   const weeks = await loadWeeks();
+
   const container = document.getElementById("weeks");
 
   weeks.forEach((week) => {
@@ -35,7 +36,7 @@ async function init() {
             </span>
 
             <span class="week-action">
-                Презентация →
+                Presentation →
             </span>
         `;
 
@@ -51,5 +52,5 @@ init().catch((error) => {
   console.error(error);
 
   document.getElementById("error").textContent =
-    "Неуспешно зареждане на темите.";
+    `Неуспешно зареждане на темите: ${error.message}`;
 });
