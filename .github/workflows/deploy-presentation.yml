@@ -18,12 +18,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prepare presentation
         run: |
           mkdir -p _site
-
           cp -r presentation/* _site/
 
       - name: Copy weekly READMEs
@@ -52,27 +51,20 @@ jobs:
               os.listdir("."),
               key=lambda x: int(
                   re.search(r"\d+", x).group()
-              ) if re.match(r"^Week\d+$", x)
+              ) if re.fullmatch(r"Week\d+", x)
               else 999
           )
 
           for directory in directories:
-
               if not re.fullmatch(r"Week\d+", directory):
                   continue
 
-              readme = os.path.join(
-                  directory,
-                  "README.md"
-              )
+              readme = os.path.join(directory, "README.md")
 
               if not os.path.isfile(readme):
                   continue
 
-              number = re.search(
-                  r"\d+",
-                  directory
-              ).group()
+              number = re.search(r"\d+", directory).group()
 
               weeks.append({
                   "id": number,
@@ -80,7 +72,7 @@ jobs:
                   "path": f"{directory}/README.md"
               })
 
-          with open("_site/weeks.json", "w") as file:
+          with open("_site/weeks.json", "w", encoding="utf-8") as file:
               json.dump(
                   weeks,
                   file,
@@ -88,7 +80,6 @@ jobs:
                   indent=2
               )
 
-          print("Generated weeks.json:")
           print(json.dumps(
               weeks,
               ensure_ascii=False,
@@ -100,7 +91,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "_site"
 
